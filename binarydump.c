@@ -73,8 +73,10 @@ int main (int argc, char **argv)
 
 void process_args(int argc, char **argv)
 {
+    
     // For each argument (ignoring argv[0])
-     for (int i = 1; i < argc; i++) {
+    int i;
+    for (i = 1; i < argc; i++) {
          char *arg = argv[i];
          
          // Is this argument an option?
@@ -137,7 +139,8 @@ void binary_dump(FILE *file)
         offset += num_bytes_read;
         
         // For each byte that was read
-        for (int i = 0; i < num_bytes_read; i++) {
+        int i;
+        for (i = 0; i < num_bytes_read; i++) {
             print_byte(buff[i]);
             if (formatting_enabled) printf("   ");
         }

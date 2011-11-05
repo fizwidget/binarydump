@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 
 binarydump: binarydump.o
 	$(CC) -o binarydump binarydump.o

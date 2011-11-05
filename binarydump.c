@@ -27,7 +27,7 @@
  */
 
 /* 
- * Processes CLI arguments and sets global variables.
+ * Processes CLI arguments, setting global vars as appropriate.
  * If args are invalid, prints usage & terminates.
  */
 void process_args(int argc, char **argv);
@@ -40,12 +40,12 @@ void print_byte(unsigned char b);
  * Global variables.
  */
 
-int chunksize = 4;          // Number of bytes to print per line
+int bytes_per_line = 4;     // Number of bytes to print per line
 int formatting_enabled = 1; // Print addresses & whitespace?
 char *filename = NULL;      // Name of file to be printed
 
 /*
- * Program entry point.
+ * Function implementations.
  */
 
 int main (int argc, char **argv)
@@ -74,16 +74,24 @@ int main (int argc, char **argv)
 
 void process_args(int argc, char **argv)
 {
+    /*
+     * Valid arguments:
+     * [-h | -help] // Prints usage
+     * [FILE]       // The file to be printed (if not specified, default to stdin)
+     * [-n count]   // Sets number of bytes to print per line
+     * [-raw]       // Disables address column & removes whitespace
+     */
+    
     // For each argument (ignoring argv[0])
     int i;
     for (i = 1; i < argc; i++) {
          char *arg = argv[i];
          
-         // Is this argument an option?
+         // Does this argument start with '-'?
          if (*arg == '-') {
              arg++; // Skip over '-'
              
-             // Determine type of option
+             // Determine option
              if (*arg == 'h') {
                  // Help option [-h | -help]
                  printf("Example usage:\n");
@@ -95,23 +103,23 @@ void process_args(int argc, char **argv)
                  printf("Raw mode prints the bits without any whitespace,");
                  printf(" and without\nan address offset column.");
                  printf(" If no file is specified,\nstandard input will be read.\n");
+                 
                  exit(EXIT_FAILURE);
                  
              } else if (*arg == 'n') {
-                 // Chunksize option [-n chunksize]
-                 
+                 // Bytes per line option [-n count]
                  if (++i < argc) {
                      int tmp = atoi(argv[i]);
-                     if (tmp) chunksize = tmp; // Must be non-zero
+                     if (tmp) bytes_per_line = tmp; // Must be non-zero
                      
                  } else {
-                     // Error, chunksize not specified
-                     printf("error: option \"-n\" given, but chunksize not specified.\n");
+                     // Error, 'count' not specified
+                     printf("error: option \"-n\" given, but bytes_per_line not specified.\n");
                      exit(EXIT_FAILURE);
                  }
                  
              } else if (*arg == 'r') {
-                 // Raw option [-r]
+                 // Raw option [-raw]
                  formatting_enabled = 0;
                  
              } else {
@@ -133,12 +141,12 @@ void process_args(int argc, char **argv)
 
 void binary_dump(FILE *file)
 {
-    char *buff = malloc(chunksize); // 'chunksize' bytes read into buffer each iteration
-    int offset = 0;                 // Track offset from start of file
-    int num_bytes_read;             // Number of bytes read in a single iteration
+    char *buff = malloc(bytes_per_line);    // 'bytes_per_line' bytes read into buffer each iteration
+    int offset = 0;                         // Track offset from start of file
+    int num_bytes_read;                     // Number of bytes read in a single iteration
     
     // For each chunk of bytes
-    while ((num_bytes_read = fread(buff, 1, chunksize, file))) {
+    while ((num_bytes_read = fread(buff, 1, bytes_per_line, file))) {
         
         if (formatting_enabled) {
             printf("0x%X\t", offset);
@@ -166,8 +174,8 @@ void print_byte(unsigned char b)
 {
     /*
      * Algorithm used:
-     * 1. Create a byte 'tmp' with MSB set to 1 (i.e. 10000000).
-     * 2. If b & tmp is non-zero, print 1, else print 0.
+     * 1. Initialise 'tmp' to 10000000 (0x80 in hex)
+     * 2. If (b AND tmp) is non-zero, print 1, else print 0.
      * 3. Right-shift tmp (after first iteration, it becomes 01000000).
      * 4. If tmp is non-zero, jump to step 2.
      */

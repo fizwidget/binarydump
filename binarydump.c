@@ -34,7 +34,7 @@ void process_args(int argc, char **argv);
 /* Prints the contents of 'file' in binary */
 void binary_dump(FILE *file);
 /* Prints an individual byte in binary */
-void print_byte(unsigned char byte);
+void print_byte(unsigned char b);
 
 /*
  * Global variables.
@@ -66,9 +66,7 @@ int main (int argc, char **argv)
         }
     }
     
-    // Display file
     binary_dump(file);
-    // Close file
     fclose(file);
     
     return 0;
@@ -76,7 +74,6 @@ int main (int argc, char **argv)
 
 void process_args(int argc, char **argv)
 {
-    
     // For each argument (ignoring argv[0])
     int i;
     for (i = 1; i < argc; i++) {
@@ -89,7 +86,15 @@ void process_args(int argc, char **argv)
              // Determine type of option
              if (*arg == 'h') {
                  // Help option [-h | -help]
-                 printf("usage: bindump [FILE] [-n chunksize] [-r]\n");
+                 printf("Example usage:\n");
+                 printf("   binarydump\n");
+                 printf("   binarydump [FILE]\n");
+                 printf("   binarydump [FILE] -n [bytesPerLine]\n");
+                 printf("   binarydump [FILE] -raw\n");
+                 printf("\n");
+                 printf("Raw mode prints the bits without any whitespace,");
+                 printf(" and without\nan address offset column.");
+                 printf(" If no file is specified,\nstandard input will be read.\n");
                  exit(EXIT_FAILURE);
                  
              } else if (*arg == 'n') {
@@ -157,9 +162,16 @@ void binary_dump(FILE *file)
     }
 }
 
-void print_byte(unsigned char byte)
+void print_byte(unsigned char b)
 {
+    /*
+     * Algorithm used:
+     * 1. Create a byte 'tmp' with MSB set to 1 (i.e. 10000000).
+     * 2. If b & tmp is non-zero, print 1, else print 0.
+     * 3. Right-shift tmp (after first iteration, it becomes 01000000).
+     * 4. If tmp is non-zero, jump to step 2.
+     */
     unsigned char tmp = 0x80;
-    do printf("%i", (byte & tmp) ? 1 : 0);
+    do printf("%i", (b & tmp) ? 1 : 0);
     while (tmp >>= 1);
 }

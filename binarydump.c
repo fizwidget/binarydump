@@ -7,12 +7,16 @@
  * 0x0	01101000   01100101   01101100   01101100   
  * 0x4	01101111   00100000   01110111   01101111   
  * 0x8	01110010   01101100   01100100   00100000
+ * 0xC
  *
- * By default, it prints hexadecimal offset addresses. The '-r' option disables
- * address printing, and removes the whitespace that is normally printed between bytes.
+ * By default, hexadecimal offset addresses are printed in the left column.
+ * The '-r' option disables address printing, and removes the whitespace
+ * that is normally printed between bytes. Basically, it displays the raw bits
+ * without any extra formatting.
  * The '-n' option controls the number of bytes printed per line of output.
  *
- * Author: James Russell (fizwidget)
+ * Contributors:
+ * - James Russell (fizwidget)
  */
 
 #include <stdlib.h>

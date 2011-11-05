@@ -1,2 +1,16 @@
 Simple command line utility that displays file contents in binary.
-Similar to the popular Unix utility 'hexdump', but in binary rather than hex.
+Similar to the popular Unix utility hexdump.
+
+Example usage...
+
+$ binarydump hello.txt 
+0x0    01001000   01100101   01101100   01101100   
+0x4    01101111   00101100   00100000   01010111   
+0x8    01101111   01110010   01101100   01100100   
+0xC    00100001   00100000   01010100   01101000   
+0x10   01101001   01110011   00100000   01101001   
+0x14   01110011   00100000   01100001   01101110   
+0x18   00100000   01100101   01111000   01100001   
+0x1C   01101101   01110000   01101100   01100101   
+0x20   00101110   00001010   
+0x22

@@ -127,7 +127,7 @@ void binary_dump(FILE *file)
         
         offset += num_bytes_read;
         
-        // For each byte read
+        // For each byte that was read
         for (int i = 0; i < num_bytes_read; i++) {
             print_byte(buff[i]);
             if (formatting_enabled) printf("   ");

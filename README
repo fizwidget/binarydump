@@ -1,0 +1,2 @@
+Simple command line utility that displays file contents in binary.
+Similar to the popular Unix utility 'hexdump', but in binary rather than hex.

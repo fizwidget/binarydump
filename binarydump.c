@@ -174,7 +174,7 @@ void print_byte(unsigned char b)
 {
     /*
      * Algorithm used:
-     * 1. Initialise 'tmp' to 10000000 (0x80 in hex)
+     * 1. Initialise 'tmp' to 10000000 (80 in hex)
      * 2. If (b AND tmp) is non-zero, print 1, else print 0.
      * 3. Right-shift tmp (after first iteration, it becomes 01000000).
      * 4. If tmp is non-zero, jump to step 2.

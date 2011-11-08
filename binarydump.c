@@ -26,23 +26,20 @@
  * Function prototypes.
  */
 
-/* 
- * Processes CLI arguments, setting global vars as appropriate.
- * If args are invalid, prints usage & terminates.
- */
-void process_args(int argc, char **argv);
 /* Prints the contents of 'file' in binary */
 void binary_dump(FILE *file);
 /* Prints an individual byte in binary */
 void print_byte(unsigned char b);
+/* Processes CLI arguments & sets global vars; terminates prog if args invalid. */
+void process_args(int argc, char **argv);
 
 /*
  * Global variables.
  */
 
-int bytes_per_line = 4;     // Number of bytes to print per line
-int formatting_enabled = 1; // Print addresses & whitespace?
-char *filename = NULL;      // Name of file to be printed
+int bytes_per_line = 4;         // Number of bytes to print per line
+int formatting_enabled = 1;     // Print addresses & whitespace?
+char *filename = NULL;          // Name of file to be printed
 
 /*
  * Function implementations.
@@ -72,81 +69,11 @@ int main (int argc, char **argv)
     return 0;
 }
 
-void process_args(int argc, char **argv)
-{
-    /*
-     * There are no required arguments.
-     * Optional arguments:
-     * [-h | -help]     Prints usage
-     * [FILE]           The file to be printed (if not specified, default to stdin)
-     * [-n count]       Sets number of bytes to print per line
-     * [-r | -raw]      Disables printing of address column & removes whitespace
-     */
-    
-    char *arg;
-    int i;
-    
-    // For each argument (ignoring argv[0])
-    for (i = 1; i < argc; i++) {
-         arg = argv[i]; 
-         
-         // Does this argument start with '-'?
-         if (*arg == '-') {
-             arg++; // Skip over '-'
-             
-             // Determine type of argument
-             if (*arg == 'h') {
-                 // Help option [-h | -help]
-                 fprintf(stderr, "Example usage:\n");
-                 fprintf(stderr, "   binarydump\n");
-                 fprintf(stderr, "   binarydump [FILE]\n");
-                 fprintf(stderr, "   binarydump [FILE] -n [bytesPerLine]\n");
-                 fprintf(stderr, "   binarydump [FILE] -raw\n");
-                 fprintf(stderr, "\n");
-                 fprintf(stderr, "Raw mode prints the bits without any whitespace,");
-                 fprintf(stderr, " and without\nan address offset column.");
-                 fprintf(stderr, " If no file is specified,\nstandard input will be read.\n");
-                 exit(EXIT_FAILURE);
-                 
-             } else if (*arg == 'n') {
-                 // Bytes per line option [-n count]
-                 i++;
-                 if (i < argc) {
-                     int tmp = atoi(argv[i]);
-                     if (tmp) bytes_per_line = tmp; // Must be non-zero
-                     
-                 } else {
-                     // Error, 'count' not specified
-                     fprintf(stderr, "error: option \"-n\" given, but bytes_per_line not specified.\n");
-                     exit(EXIT_FAILURE);
-                 }
-                 
-             } else if (*arg == 'r') {
-                 // Raw option [-raw]
-                 formatting_enabled = 0;
-                 
-             } else {
-                 fprintf(stderr, "error: unrecognised option \"-%s\"\n", arg);
-                 exit(EXIT_FAILURE);
-             }
-             
-         } else {
-             // File specified
-             if (filename) {
-                 fprintf(stderr, "error: more than one file specified\n");
-                 exit(EXIT_FAILURE);
-             } else {
-                 filename = arg; 
-             }
-         }
-     }
-}
-
 void binary_dump(FILE *file)
 {
     char *buff = malloc(bytes_per_line);    // 'bytes_per_line' bytes read into buffer each iteration
     int offset = 0;                         // Track offset from start of file
-    int num_bytes_read;                     // Number of bytes read in a single iteration
+    int num_bytes_read;                     // Number of bytes read by fread()
     int i;
     
     // For each chunk of bytes
@@ -185,4 +112,75 @@ void print_byte(unsigned char b)
     unsigned char tmp = 0x80;
     do printf("%i", (b & tmp) ? 1 : 0);
     while (tmp >>= 1);
+}
+
+void process_args(int argc, char **argv)
+{
+    /*
+     * There are no required arguments.
+     * Optional arguments:
+     * [-h | -help]     Prints usage
+     * [FILE]           The file to be printed (if not specified, default to stdin)
+     * [-n count]       Sets number of bytes to print per line
+     * [-r | -raw]      Disables printing of address column & removes whitespace
+     */
+    
+    char *arg;
+    int i;
+    
+    // For each argument (ignoring argv[0])
+    for (i = 1; i < argc; i++) {
+         arg = argv[i]; 
+         
+         // Does this argument start with '-'?
+         if (*arg == '-') {
+             arg++; // Skip over '-'
+             
+             // Determine type of argument
+             if (*arg == 'h') {
+                 // Help option [-h | -help]
+                 printf("Example usage:\n");
+                 printf("   binarydump\n");
+                 printf("   binarydump [FILE]\n");
+                 printf("   binarydump [FILE] -n [bytesPerLine]\n");
+                 printf("   binarydump [FILE] -raw\n");
+                 printf("\n");
+                 printf("Raw mode prints the bits without any whitespace,");
+                 printf(" and without\nan address offset column.");
+                 printf(" If no file is specified,\nstandard input will be read.\n");
+                 
+                 exit(EXIT_SUCCESS);
+                 
+             } else if (*arg == 'n') {
+                 // Bytes per line option [-n count]
+                 i++;
+                 if (i < argc) {
+                     int tmp = atoi(argv[i]);
+                     if (tmp) bytes_per_line = tmp; // Must be non-zero
+                     
+                 } else {
+                     // Error, 'count' not specified
+                     fprintf(stderr, "error: option \"-n\" given, but count not specified.\n");
+                     exit(EXIT_FAILURE);
+                 }
+                 
+             } else if (*arg == 'r') {
+                 // Raw option [-raw]
+                 formatting_enabled = 0;
+                 
+             } else {
+                 fprintf(stderr, "error: unrecognised option \"-%s\"\n", arg);
+                 exit(EXIT_FAILURE);
+             }
+             
+         } else {
+             // File specified
+             if (filename) {
+                 fprintf(stderr, "error: more than one file specified\n");
+                 exit(EXIT_FAILURE);
+             } else {
+                 filename = arg; 
+             }
+         }
+     }
 }

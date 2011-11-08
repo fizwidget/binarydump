@@ -61,7 +61,7 @@ int main (int argc, char **argv)
         // Yes, attempt to open the file
         file = fopen(filename, "rb");
         if (!file) {
-            printf("error: could not open file %s\n", filename);
+            fprintf(stderr, "error: could not open file %s\n", filename);
             exit(EXIT_FAILURE);
         }
     }
@@ -75,46 +75,49 @@ int main (int argc, char **argv)
 void process_args(int argc, char **argv)
 {
     /*
-     * Valid arguments:
-     * [-h | -help] // Prints usage
-     * [FILE]       // The file to be printed (if not specified, default to stdin)
-     * [-n count]   // Sets number of bytes to print per line
-     * [-raw]       // Disables address column & removes whitespace
+     * There are no required arguments.
+     * Optional arguments:
+     * [-h | -help]     Prints usage
+     * [FILE]           The file to be printed (if not specified, default to stdin)
+     * [-n count]       Sets number of bytes to print per line
+     * [-r | -raw]      Disables printing of address column & removes whitespace
      */
     
-    // For each argument (ignoring argv[0])
+    char *arg;
     int i;
+    
+    // For each argument (ignoring argv[0])
     for (i = 1; i < argc; i++) {
-         char *arg = argv[i];
+         arg = argv[i]; 
          
          // Does this argument start with '-'?
          if (*arg == '-') {
              arg++; // Skip over '-'
              
-             // Determine option
+             // Determine type of argument
              if (*arg == 'h') {
                  // Help option [-h | -help]
-                 printf("Example usage:\n");
-                 printf("   binarydump\n");
-                 printf("   binarydump [FILE]\n");
-                 printf("   binarydump [FILE] -n [bytesPerLine]\n");
-                 printf("   binarydump [FILE] -raw\n");
-                 printf("\n");
-                 printf("Raw mode prints the bits without any whitespace,");
-                 printf(" and without\nan address offset column.");
-                 printf(" If no file is specified,\nstandard input will be read.\n");
-                 
+                 fprintf(stderr, "Example usage:\n");
+                 fprintf(stderr, "   binarydump\n");
+                 fprintf(stderr, "   binarydump [FILE]\n");
+                 fprintf(stderr, "   binarydump [FILE] -n [bytesPerLine]\n");
+                 fprintf(stderr, "   binarydump [FILE] -raw\n");
+                 fprintf(stderr, "\n");
+                 fprintf(stderr, "Raw mode prints the bits without any whitespace,");
+                 fprintf(stderr, " and without\nan address offset column.");
+                 fprintf(stderr, " If no file is specified,\nstandard input will be read.\n");
                  exit(EXIT_FAILURE);
                  
              } else if (*arg == 'n') {
                  // Bytes per line option [-n count]
-                 if (++i < argc) {
+                 i++;
+                 if (i < argc) {
                      int tmp = atoi(argv[i]);
                      if (tmp) bytes_per_line = tmp; // Must be non-zero
                      
                  } else {
                      // Error, 'count' not specified
-                     printf("error: option \"-n\" given, but bytes_per_line not specified.\n");
+                     fprintf(stderr, "error: option \"-n\" given, but bytes_per_line not specified.\n");
                      exit(EXIT_FAILURE);
                  }
                  
@@ -123,14 +126,14 @@ void process_args(int argc, char **argv)
                  formatting_enabled = 0;
                  
              } else {
-                 printf("error: unrecognised option \"-%s\"\n", arg);
+                 fprintf(stderr, "error: unrecognised option \"-%s\"\n", arg);
                  exit(EXIT_FAILURE);
              }
              
          } else {
              // File specified
              if (filename) {
-                 printf("error: more than one file specified\n");
+                 fprintf(stderr, "error: more than one file specified\n");
                  exit(EXIT_FAILURE);
              } else {
                  filename = arg; 
@@ -144,6 +147,7 @@ void binary_dump(FILE *file)
     char *buff = malloc(bytes_per_line);    // 'bytes_per_line' bytes read into buffer each iteration
     int offset = 0;                         // Track offset from start of file
     int num_bytes_read;                     // Number of bytes read in a single iteration
+    int i;
     
     // For each chunk of bytes
     while ((num_bytes_read = fread(buff, 1, bytes_per_line, file))) {
@@ -155,7 +159,6 @@ void binary_dump(FILE *file)
         offset += num_bytes_read;
         
         // For each byte that was read
-        int i;
         for (i = 0; i < num_bytes_read; i++) {
             print_byte(buff[i]);
             if (formatting_enabled) printf("   ");

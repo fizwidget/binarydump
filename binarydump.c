@@ -75,7 +75,7 @@ void binary_dump(FILE *file)
     int num_bytes_read;                         // Number of bytes read by fread()
     int i;
     
-    // For each chunk of bytes
+    // While more data remains, read bytes into buffer
     while ((num_bytes_read = fread(line_buff, 1, bytes_per_line, file))) {
         
         if (formatting_enabled) {

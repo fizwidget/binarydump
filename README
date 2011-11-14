@@ -7,7 +7,5 @@ Example output:
 0xC
 
 By default, hexadecimal offset addresses are printed in the left column.
-The '-r' option disables address printing, and removes the whitespace
-that is normally printed between bytes. Basically, it displays the raw bits
-without any extra formatting.
-The '-n' option controls the number of bytes printed per line of output.
+The '-r' option disables address printing, and removes the whitespace between columns.
+The '-n' option sets the number of bytes printed per line.

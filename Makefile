@@ -7,5 +7,5 @@ binarydump.o: binarydump.c
 	$(CC) -c binarydump.c
 
 clean:
-	rm -i *.o
-	rm -i binarydump
+	rm *.o
+	rm binarydump

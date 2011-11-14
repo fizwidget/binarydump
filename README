@@ -9,3 +9,4 @@ Example output:
 By default, hexadecimal offset addresses are printed in the left column.
 The '-r' option disables address printing, and removes the whitespace between columns.
 The '-n' option sets the number of bytes printed per line.
+If no file is specified, standard input is read.

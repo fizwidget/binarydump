@@ -12,6 +12,7 @@
  * By default, hexadecimal offset addresses are printed in the left column.
  * The '-r' option disables address printing, and removes the whitespace between columns.
  * The '-n' option sets the number of bytes printed per line.
+ * If no file is specified, standard input is read.
  *
  * Contributors:
  * - James Russell (fizwidget)
@@ -104,7 +105,7 @@ void print_byte(unsigned char byte)
     /*
      * Algorithm used:
      * 1. Initialise bitmask to 10000000 (80 in hex).
-     * 2. Use bitmask to extract leftmost bit in 'byte'.
+     * 2. Use bitmask to extract bit from 'byte'.
      * 3. If extracted bit == 1 then print 1, else print 0.
      * 4. Right-shift bitmask, and jump to step 2 if bitmask is non-zero.
      */

@@ -85,7 +85,7 @@ void binary_dump(FILE *file)
         
         offset += num_bytes_read;
         
-        // For each byte in the buffer
+        // Print each byte in the buffer
         for (i = 0; i < num_bytes_read; i++) {
             print_byte(byte_buff[i]);
             if (formatting_enabled) printf("   ");
@@ -105,12 +105,13 @@ void binary_dump(FILE *file)
 void print_byte(unsigned char byte)
 {
     /*
-     * Algorithm used:
+     * Algorithm:
      * 1. Initialise bitmask to 10000000 (80 in hex).
      * 2. Use bitmask to extract bit from 'byte'.
      * 3. If extracted bit == 1 then print 1, else print 0.
-     * 4. Right-shift bitmask, and jump to step 2 if bitmask is non-zero.
+     * 4. Right-shift bitmask; jump to step 2 if bitmask is non-zero.
      */
+     
     unsigned char mask = 0x80;
     do printf("%i", (mask & byte) ? 1 : 0);
     while (mask >>= 1);
@@ -121,10 +122,10 @@ void process_args(int argc, char **argv)
     /*
      * There are no required arguments.
      * Optional arguments:
-     * [-h | -help]     Prints usage & exits
-     * [FILE]           The file to be printed (if not specified, defaults to stdin)
-     * [-n count]       Sets number of bytes to print per line
-     * [-r | -raw]      Disables printing of address column & removes whitespace
+     * [-h | -help]         Print usage & exit
+     * [FILE]               Specify the file to be printed (if not specified, program defaults to stdin)
+     * [-n bytesPerLine]    Set number of bytes to print per line
+     * [-r | -raw]          Disable printing of address column & remove whitespace
      */
     
     char *arg;
@@ -142,7 +143,7 @@ void process_args(int argc, char **argv)
              if (*arg == 'h') {
                  // Help option [-h | -help]
                  printf("Usage:\n");
-                 printf("   binarydump [FILE] [-n bytesPerLine] [-raw]\n");
+                 printf("   binarydump [FILE] [-n bytesPerLine] [-r | -raw]\n");
                  printf("\n");
                  printf("Raw mode prints nothin' but the bits (address offsets & whitespace will NOT be printed).\n");
                  printf("If no file is specified, standard input will be read.\n");
@@ -154,16 +155,16 @@ void process_args(int argc, char **argv)
                  i++;
                  if (i < argc) {
                      int tmp = atoi(argv[i]);
-                     if (tmp) bytes_per_line = tmp; // Must be non-zero
+                     if (tmp != 0) bytes_per_line = tmp;
                      
                  } else {
-                     // Error, 'count' not specified
+                     // Error, 'bytesPerLine' not specified
                      fprintf(stderr, "error: option \"-n\" given, but count not specified.\n");
                      exit(EXIT_FAILURE);
                  }
                  
              } else if (*arg == 'r') {
-                 // Raw option [-raw]
+                 // Raw option [-r | -raw]
                  formatting_enabled = 0;
                  
              } else {

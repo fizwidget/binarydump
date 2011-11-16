@@ -70,13 +70,13 @@ int main (int argc, char **argv)
 
 void binary_dump(FILE *file)
 {
-    char *line_buff = malloc(bytes_per_line);   // Stores however many bytes will be printed per line
+    char *byte_buff = malloc(bytes_per_line);   // Stores however many bytes will be printed per line
     int offset = 0;                             // Track offset from start of file
     int num_bytes_read;                         // Number of bytes read by fread()
     int i;
     
     // While more data remains, read bytes into buffer
-    while ((num_bytes_read = fread(line_buff, 1, bytes_per_line, file))) {
+    while ((num_bytes_read = fread(byte_buff, 1, bytes_per_line, file))) {
         
         if (formatting_enabled) {
             // Print hexadecimal offset address
@@ -87,7 +87,7 @@ void binary_dump(FILE *file)
         
         // For each byte in the buffer
         for (i = 0; i < num_bytes_read; i++) {
-            print_byte(line_buff[i]);
+            print_byte(byte_buff[i]);
             if (formatting_enabled) printf("   ");
         }
         
@@ -98,6 +98,8 @@ void binary_dump(FILE *file)
         // Print final offset (i.e. size of file)
         printf("0x%X\n", offset);
     }
+    
+    free(byte_buff);
 }
 
 void print_byte(unsigned char byte)
